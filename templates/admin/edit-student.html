@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Student{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'view_students' %}">Back to Students</a>
+{% endblock %}
+
+{% block content %}
+    <h1>{% if student_id %}Edit{% else %}Add New{% endif %} Student</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        
+        <button type="submit" class="btn">{% if student_id %}Update{% else %}Create{% endif %} Student</button>
+    </form>
+{% endblock %}

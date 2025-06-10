@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Reports{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+    <h1>Generate Reports</h1>
+    
+    <div class="container">
+        <section class="card">
+            <h2>Students by GPA</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Student ID</th>
+                        <th>GPA</th>
+                        <th>Number of Courses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student_data in students_by_gpa %}
+                        <tr>
+                            <td>{{ student_data.student.user.first_name }} {{ student_data.student.user.last_name }}</td>
+                            <td>{{ student_data.student.id }}</td>
+                            <td>{{ student_data.gpa }}</td>
+                            <td>{{ student_data.enrollments.count }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4">No student data available</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        
+        <section class="card mt-20">
+            <h2>Students by Course</h2>
+            
+            <form method="get" class="filter-form">
+                <div class="form-group">
+                    <label for="course">Select Course:</label>
+                    <select name="course_id" id="course" class="form-control" onchange="this.form.submit()">
+                        <option value="">-- Select a Course --</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}" {% if selected_course.id == course.id %}selected{% endif %}>
+                                {{ course.course_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if selected_semester %}
+                <input type="hidden" name="semester_id" value="{{ selected_semester.id }}" class="form-control">
+                {% endif %}
+            </form>
+            
+            {% if selected_course %}
+                <h3>Enrollments for {{ selected_course.course_name }}</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Student ID</th>
+                            <th>Semester</th>
+                            <th>Year</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in students_by_course %}
+                            <tr>
+                                <td>{{ enrollment.student.user.first_name }} {{ enrollment.student.user.last_name }}</td>
+                                <td>{{ enrollment.student.id }}</td>
+                                <td>{{ enrollment.semester.semester_name }}</td>
+                                <td>{{ enrollment.year }}</td>
+                                <td>{{ enrollment.grade }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5">No enrollments found for this course</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Please select a course to view student enrollments</p>
+            {% endif %}
+        </section>
+        
+        <section class="card mt-20">
+            <h2>Courses by Semester</h2>
+            
+            <form method="get" class="filter-form">
+                <div class="form-group">
+                    <label for="semester">Filter by Semester:</label>
+                    <select name="semester_id" id="semester" class="form-control" onchange="this.form.submit()">
+                        <option value="">-- All Semesters --</option>
+                        {% for semester in semesters %}
+                            <option value="{{ semester.id }}" {% if selected_semester.id == semester.id %}selected{% endif %}>
+                                {{ semester.semester_name }} ({{ semester.start_date|date:"M Y" }} - {{ semester.end_date|date:"M Y" }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% if selected_course %}
+                <input type="hidden" name="course_id" value="{{ selected_course.id }}" class="form-control">
+                {% endif %}
+            </form>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Description</th>
+                        <th>Instructor</th>
+                        <th>Credits</th>
+                        <th>Semester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in filtered_courses %}
+                        <tr>
+                            <td>{{ course.course_name }}</td>
+                            <td>{{ course.description }}</td>
+                            <td>{{ course.instructor.first_name }} {{ course.instructor.last_name }}</td>
+                            <td>{{ course.credits }}</td>
+                            <td>{{ course.semester.semester_name|default:"Not Assigned" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">No courses available{% if selected_semester %} for {{ selected_semester.semester_name }}{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </div>
+{% endblock %}

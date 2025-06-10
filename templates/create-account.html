@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'login' %}">Back to Login</a>
+{% endblock %}
+
+{% block content %}
+    <h1>Create Account</h1>
+    
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.as_p }}
+            </div>
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+    </div>
+    
+    <script>
+        // Get role field to toggle student/advisor specific fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const roleField = document.getElementById('id_role');
+            const studentFields = [
+                'id_home_address',
+                'id_phone_number',
+                'id_current_semester',
+                'id_program'
+            ];
+            
+            function toggleFields() {
+                const selectedOption = roleField.options[roleField.selectedIndex];
+                const selectedRole = selectedOption.text;
+                
+                // Show/hide student fields based on role
+                studentFields.forEach(function(fieldId) {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        const fieldWrapper = field.closest('p');
+                        if (selectedRole === 'Student') {
+                            fieldWrapper.style.display = 'block';
+                        } else {
+                            fieldWrapper.style.display = 'none';
+                        }
+                    }
+                });
+            }
+            
+            // Initial toggle
+            toggleFields();
+            
+            // Toggle on role change
+            roleField.addEventListener('change', toggleFields);
+        });
+    </script>
+{% endblock %}

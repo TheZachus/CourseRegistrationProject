@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}View Students{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    {% if user_role == 'Admin' %}
+        <a href="{% url 'edit_student' %}">Add New Student</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <h1>View Students</h1>
+    <div class="students-container">
+        {% if students %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Home Address</th>
+                        <th>Phone Number</th>
+                        <th>Current Semester</th>
+                        <th>Program</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.user.first_name }} {{ student.user.last_name }}</td>
+                        <td>{{ student.user.email }}</td>
+                        <td>{{ student.home_address }}</td>
+                        <td>{{ student.phone_number }}</td>
+                        <td>{{ student.current_semester.semester_name|default:"None" }}</td>
+                        <td>{{ student.program.program_name }}</td>
+                        <td>
+                            <a href="{% url 'edit_student_with_pk' student.id %}" class="btn btn-sm">Edit</a>
+                            {% if user_role == 'Admin' %}
+                            <form method="post" action="{% url 'delete_student_advisor' student.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?');">Delete</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No students available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

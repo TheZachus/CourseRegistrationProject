@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if enrollment.id %}Edit{% else %}Add New{% endif %} Enrollment{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'edit_enrollment' %}?student_id={{ enrollment.student.id }}">Back to Enrollments</a>
+{% endblock %}
+
+{% block content %}
+    <h1>{% if enrollment.id %}Edit{% else %}Add New{% endif %} Enrollment</h1>
+    {% if enrollment.id %}
+    <h2>{{ enrollment.student.user.first_name }} {{ enrollment.student.user.last_name }} - {{ enrollment.course.course_name }}</h2>
+    {% else %}
+    <h2>New Enrollment for {{ enrollment.student.user.first_name }} {{ enrollment.student.user.last_name }}</h2>
+    {% endif %}
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn">Save Changes</button>
+    </form>
+{% endblock %} 

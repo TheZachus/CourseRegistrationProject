@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Advisor{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'view_advisors' %}">Back to Advisors</a>
+{% endblock %}
+
+{% block content %}
+    <h1>{% if form.instance.pk %}Edit{% else %}Add New{% endif %} Advisor</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="btn">Save Changes</button>
+    </form>
+{% endblock %} 

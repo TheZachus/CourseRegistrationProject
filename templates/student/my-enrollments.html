@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}My Enrollments{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <!-- No direct edit page for enrollments -->
+{% endblock %}
+
+{% block content %}
+    <h1>My Enrollments</h1>
+    
+    <!-- Current Enrollments Section -->
+    <h2>Current Enrollments</h2>
+    <div class="card">
+        {% if current_enrollments %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Course</th>
+                        <th>Semester</th>
+                        <th>Year</th>
+                        <th>Grade</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in current_enrollments %}
+                    <tr>
+                        <td>{{ enrollment.student.user.first_name }} {{ enrollment.student.user.last_name }}</td>
+                        <td>{{ enrollment.course.course_name }}</td>
+                        <td>{{ enrollment.semester.semester_name }}</td>
+                        <td>{{ enrollment.year }}</td>
+                        <td>{{ enrollment.grade }}</td>
+                        <td>
+                                <form method="post" action="{% url 'my_enrollments' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="enrollment_id" value="{{ enrollment.id }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to drop this course?');">Drop</button>
+                                </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You are not enrolled in any current courses.</p>
+        {% endif %}
+    </div>
+
+    <!-- Past Enrollments Section -->
+    <h2 class="mt-20">Past Enrollments</h2>
+    <div class="card">
+        {% if past_enrollments %}
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Course</th>
+                        <th>Semester</th>
+                        <th>Year</th>
+                        <th>Grade</th>
+                        <th>Date Dropped</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in past_enrollments %}
+                    <tr>
+                        <td>{{ enrollment.student.user.first_name }} {{ enrollment.student.user.last_name }}</td>
+                        <td>{{ enrollment.course.course_name }}</td>
+                        <td>{{ enrollment.semester.semester_name }}</td>
+                        <td>{{ enrollment.year }}</td>
+                        <td>{{ enrollment.grade }}</td>
+                        <td>{{ enrollment.date_dropped }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>You have no past enrollments.</p>
+        {% endif %}
+    </div>
+{% endblock %}

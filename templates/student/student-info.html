@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Information{% endblock %}
+
+{% block navigation %}
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+    <h1>
+        {% if user_role == 'Student' %}
+            My Student Profile
+        {% else %}
+            Student Information
+        {% endif %}
+    </h1>
+    
+    <div class="student-info-container">
+        {% if students %}
+            <div class="student-list">
+                {% for student in students %}
+                <div class="student-card">
+                    <div class="student-row">
+                        <div class="student-label">Name:</div>
+                        <div class="student-value">{{ student.user.first_name }} {{ student.user.last_name }}</div>
+                    </div>
+                    <div class="student-row">
+                        <div class="student-label">Email:</div>
+                        <div class="student-value">{{ student.user.email }}</div>
+                    </div>
+                    <div class="student-row">
+                        <div class="student-label">Home Address:</div>
+                        <div class="student-value">{{ student.home_address }}</div>
+                    </div>
+                    <div class="student-row">
+                        <div class="student-label">Phone Number:</div>
+                        <div class="student-value">{{ student.phone_number }}</div>
+                    </div>
+                    <div class="student-row">
+                        <div class="student-label">Current Semester:</div>
+                        <div class="student-value">{{ student.current_semester.semester_name }}</div>
+                    </div>
+                    <div class="student-row">
+                        <div class="student-label">Program:</div>
+                        <div class="student-value">{{ student.program.program_name }}</div>
+                    </div>
+                    <div class="student-actions">
+                        {% if user_role == 'Student' %}
+                            <a href="{% url 'edit_student_info_with_pk' student.id %}" class="btn">Edit My Profile</a>
+                        {% else %}
+                            <a href="{% url 'edit_student_info_with_pk' student.id %}" class="btn">Edit</a>
+                            <form method="post" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this student?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="student_id" value="{{ student.id }}" class="form-control">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No student information available.</p>
+        {% endif %}
+    </div>
+{% endblock %}

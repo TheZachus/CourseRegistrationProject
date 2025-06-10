@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div class="dashboard-header">
+        <h1>Dashboard</h1>
+        {% if request.session.user_id %}
+        <div class="user-info">
+            <span>Welcome, {{ request.session.first_name }}! ({{ user_role }})</span>
+            <a href="{% url 'logout' %}" class="btn btn-sm">Logout</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Common links for all users -->
+        <div class="card">
+            <h2>Courses</h2>
+            <a href="{% url 'view_courses' %}" class="btn">View Courses</a>
+        </div>
+        
+        <!-- Student links -->
+        {% if user_role == 'Student' %}
+        <div class="card">
+            <h2>Student Information</h2>
+            <a href="{% url 'student_info' %}" class="btn">View Student Info</a>
+        </div>
+        <div class="card">
+            <h2>Enrollments</h2>
+            <a href="{% url 'my_enrollments' %}" class="btn">My Enrollments</a>
+        </div>
+        {% endif %}
+
+        <!-- Advisor and Admin links -->
+        {% if user_role == 'Advisor' or user_role == 'Admin' %}
+        <div class="card">
+            <h2>Students</h2>
+            <a href="{% url 'view_students' %}" class="btn">View Students</a>
+        </div>
+        <div class="card">
+            <h2>Prerequisites</h2>
+            <a href="{% url 'view_pre_reqs' %}" class="btn">View Prerequisites</a>
+        </div>
+        <div class="card">
+            <h2>Programs</h2>
+            <a href="{% url 'view_programs' %}" class="btn">View Programs</a>
+        </div>
+        <div class="card">
+            <h2>Edit Enrollments</h2>
+            <a href="{% url 'edit_enrollment' %}" class="btn">Edit Student Enrollments</a>
+        </div>
+        <div class="card">
+            <h2>Generate Reports</h2>
+            <a href="{% url 'generate_reports' %}" class="btn">View Reports</a>
+        </div>
+        {% endif %}
+        
+        <!-- Admin only links -->
+        {% if user_role == 'Admin' %}
+        <div class="card">
+            <h2>Semesters</h2>
+            <a href="{% url 'view_semesters' %}" class="btn">View Semesters</a>
+        </div>
+        <div class="card">
+            <h2>Advisors</h2>
+            <a href="{% url 'view_advisors' %}" class="btn">View Advisors</a>
+        </div>
+        <div class="card">
+            <h2>Faculty</h2>
+            <a href="{% url 'faculty' %}" class="btn">View Faculty</a>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
